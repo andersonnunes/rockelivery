@@ -12,11 +12,11 @@ defmodule RockeliveryWeb.ErrorJSON do
   # By default, Phoenix returns the status message from
   # the template name. For example, "404.json" becomes
   # "Not Found".
-  def render(template, _assigns) when template != "400.json" do
+  def render(template, _assigns) when template != "error.json" do
     %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
   end
 
-  def render("400.json", %{result: %Changeset{} = changeset}) do
+  def render("error.json", %{result: %Changeset{} = changeset}) do
     %{message: translate_errors(changeset)}
   end
 
