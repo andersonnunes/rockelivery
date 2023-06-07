@@ -13,6 +13,8 @@ defmodule RockeliveryWeb.Router do
 
     get "/", WelcomeController, :index
     resources "/users", UsersController, except: [:new, :edit]
+
+    post "/items", ItemsController, :create
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
