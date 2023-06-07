@@ -1,5 +1,7 @@
 # Rockelivery
 
+CRUD de usuários com Phoenix e Ecto
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
