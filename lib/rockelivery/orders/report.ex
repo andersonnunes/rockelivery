@@ -3,13 +3,17 @@ defmodule Rockelivery.Orders.Report do
 
   alias Rockelivery.{Order, Repo}
 
+  @default_block_size 500
+
   def create(filename \\ "report.csv") do
     query = from order in Order, order_by: order.user_id
 
     Repo.transaction(fn ->
       query
       |> Repo.stream()
-      |> Stream.run()
+      |> Stream.chunk_every(@default_block_size)
+      |> Stream.flat_map(fn chunk -> Repo.preload(chunk, :items) end)
+      |> Enum.into([])
     end)
   end
 end
