@@ -9,7 +9,9 @@ defmodule RockeliveryWeb.UsersJSONTest do
   test "renders create.json" do
     user = build(:user)
 
-    response = UsersJSON.create(%{user: user})
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
+
+    response = UsersJSON.create(%{token: token, user: user})
 
     assert %{
              message: "User created!",
@@ -49,5 +51,13 @@ defmodule RockeliveryWeb.UsersJSONTest do
                updated_at: nil
              }
            } = response
+  end
+
+  test "renders sign_in.json" do
+    token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"
+
+    response = UsersJSON.sign_in(%{token: token})
+
+    assert %{token: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"} == response
   end
 end

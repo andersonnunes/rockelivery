@@ -1,6 +1,6 @@
 # Rockelivery
 
-CRUD de usuários com Phoenix e Ecto
+Sistema para gerenciar pedidos de um restaurante com Phoenix, Ecto, Tesla e Guardian
 
 To start your Phoenix server:
 

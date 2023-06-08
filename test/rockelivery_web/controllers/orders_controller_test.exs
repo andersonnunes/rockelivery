@@ -1,15 +1,21 @@
 defmodule RockeliveryWeb.OrdersControllerTest do
   use RockeliveryWeb.ConnCase, async: true
 
-  alias Rockelivery.Repo
+  alias RockeliveryWeb.Auth.Guardian
 
   import Rockelivery.Factory
 
   describe "create/2" do
-    test "when all params are valid, creates the item", %{conn: conn} do
-      build(:user) |> Repo.insert()
-      build(:item) |> Repo.insert()
+    setup %{conn: conn} do
+      user = insert(:user)
+      insert(:item)
+      {:ok, token, _claims} = Guardian.encode_and_sign(user)
+      conn = put_req_header(conn, "authorization", "Bearer #{token}")
 
+      {:ok, conn: conn, user: user}
+    end
+
+    test "when all params are valid, creates the item", %{conn: conn} do
       params = %{
         "address" => "Avenida Paulista",
         "comments" => "Por favor, suco natural.",

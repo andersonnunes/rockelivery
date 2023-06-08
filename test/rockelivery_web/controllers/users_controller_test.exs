@@ -4,7 +4,9 @@ defmodule RockeliveryWeb.UsersControllerTest do
   import Mox
   import Rockelivery.Factory
 
+  alias Rockelivery.Users.Create, as: UserCreate
   alias Rockelivery.ViaCep.ClientMock
+  alias RockeliveryWeb.Auth.Guardian
 
   describe "create/2" do
     test "when all params are valid, creates the user", %{conn: conn} do
@@ -63,10 +65,51 @@ defmodule RockeliveryWeb.UsersControllerTest do
     end
   end
 
+  describe "delete/2" do
+    setup %{conn: conn} do
+      user = insert(:user)
+      {:ok, token, _claims} = Guardian.encode_and_sign(user)
+      conn = put_req_header(conn, "authorization", "Bearer #{token}")
+
+      {:ok, conn: conn, user: user}
+    end
+
+    test "when there is a user with the given id, deletes the user", %{conn: conn} do
+      id = "b6de1b73-21c8-4b7b-af6b-bec5803d7f56"
+
+      response =
+        conn
+        |> delete("/api/users/#{id}")
+        |> response(:no_content)
+
+      assert response == ""
+    end
+
+    test "when user is not exists, returns the error", %{conn: conn} do
+      id = "e0f37599-2a7c-46c1-ae4e-fff0121bc819"
+
+      response =
+        conn
+        |> delete("/api/users/#{id}")
+        |> json_response(:not_found)
+
+      expected_response = %{"message" => "User not found"}
+
+      assert response == expected_response
+    end
+  end
+
   describe "get/2" do
+    setup %{conn: conn} do
+      user = insert(:user)
+      {:ok, token, _claims} = Guardian.encode_and_sign(user)
+      conn = put_req_header(conn, "authorization", "Bearer #{token}")
+
+      {:ok, conn: conn, user: user}
+    end
+
     test "when there is a user with the given id, returns the user", %{conn: conn} do
       id = "b6de1b73-21c8-4b7b-af6b-bec5803d7f56"
-      insert(:user)
 
       response =
         conn
@@ -110,39 +153,77 @@ defmodule RockeliveryWeb.UsersControllerTest do
 
       assert response == expected_response
     end
-  end
 
-  describe "delete/2" do
-    test "when there is a user with the given id, deletes the user", %{conn: conn} do
-      id = "b6de1b73-21c8-4b7b-af6b-bec5803d7f56"
-      insert(:user)
-
-      response =
+    test "when token is not sent, returns the error", %{conn: conn} do
+      conn =
         conn
-        |> delete("/api/users/#{id}")
-        |> response(:no_content)
+        |> put_req_header("authorization", "")
 
-      assert response == ""
-    end
-
-    test "when user is not exists, returns the error", %{conn: conn} do
       id = "e0f37599-2a7c-46c1-ae4e-fff0121bc819"
 
       response =
         conn
-        |> delete("/api/users/#{id}")
-        |> json_response(:not_found)
+        |> get("/api/users/#{id}")
+        |> response(:unauthorized)
 
-      expected_response = %{"message" => "User not found"}
+      expected_response = "{\"message\":\"unauthenticated\"}"
 
       assert response == expected_response
     end
   end
 
+  describe "sign_in/2" do
+    test "when all params are valid, returns token", %{conn: conn} do
+      expect(ClientMock, :get_cep_info, fn _cep -> {:ok, build(:cep_info)} end)
+
+      {:ok, user} = build(:user_params) |> UserCreate.call()
+
+      params = %{id: user.id, password: "123456"}
+
+      response =
+        conn
+        |> post("/api/users/sign_in", params)
+        |> json_response(:ok)
+
+      assert %{"token" => _token} = response
+    end
+
+    test "when credentials is invalid, returns the error", %{conn: conn} do
+      expect(ClientMock, :get_cep_info, fn _cep -> {:ok, build(:cep_info)} end)
+
+      {:ok, user} = build(:user_params) |> UserCreate.call()
+
+      params = %{id: user.id, password: "123457"}
+
+      response =
+        conn
+        |> post("/api/users/sign_in", params)
+        |> json_response(:unauthorized)
+
+      assert %{"message" => "Please verify your credentials"} = response
+    end
+
+    test "when there is some error, returns the error", %{conn: conn} do
+      response =
+        conn
+        |> post("/api/users/sign_in", %{})
+        |> json_response(:bad_request)
+
+      assert %{"message" => "Invalid or missing params"} = response
+    end
+  end
+
   describe "update/2" do
+    setup %{conn: conn} do
+      user = insert(:user)
+      {:ok, token, _claims} = Guardian.encode_and_sign(user)
+      conn = put_req_header(conn, "authorization", "Bearer #{token}")
+
+      {:ok, conn: conn, user: user}
+    end
+
     test "when all params are valid, updates the user", %{conn: conn} do
       id = "b6de1b73-21c8-4b7b-af6b-bec5803d7f56"
-      insert(:user)
 
       params = %{
         "password" => "123456",
