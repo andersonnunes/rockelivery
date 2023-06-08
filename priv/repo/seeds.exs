@@ -9,9 +9,9 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
- alias Rockelivery.{Item, Order, Repo, User}
+alias Rockelivery.{Item, Order, Repo, User}
 
- user = %User{
+user = %User{
   age: 34,
   address: "Praça da Sé",
   cep: "01001000",
@@ -19,33 +19,33 @@
   email: "anderson@email.com",
   password: "123456",
   name: "Anderson Nunes"
- }
+}
 
- %User{id: user_id} = Repo.insert!(user)
+%User{id: user_id} = Repo.insert!(user)
 
- item1 = %Item{
+item1 = %Item{
   category: :food,
   description: "Yakissoba",
   price: Decimal.new("30.00"),
   photo: "priv/photos/yakissoba.png"
- }
+}
 
- item2 = %Item{
+item2 = %Item{
   category: :drink,
   description: "Suco de uva",
   price: Decimal.new("9.50"),
   photo: "priv/photos/suco_uva.png"
- }
+}
 
- Repo.insert!(item1)
- Repo.insert!(item2)
+Repo.insert!(item1)
+Repo.insert!(item2)
 
- order = %Order{
+order = %Order{
   user_id: user_id,
   items: [item1, item1, item2],
   address: "Avenida Paulista",
   comments: "Sem açucar no suco",
   payment_method: :money
- }
+}
 
- Repo.insert!(order)
+Repo.insert!(order)
