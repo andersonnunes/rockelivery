@@ -1,9 +1,10 @@
 defmodule RockeliveryWeb.UsersJSON do
   alias Rockelivery.User
 
-  def create(%{user: %User{} = user}) do
+  def create(%{token: token, user: %User{} = user}) do
     %{
       message: "User created!",
+      token: token,
       user: user
     }
   end
