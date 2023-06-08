@@ -26,3 +26,5 @@ erl_crash.dump
 rockelivery-*.tar
 
 .elixir_ls
+
+*.csv
