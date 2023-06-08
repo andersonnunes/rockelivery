@@ -23,7 +23,6 @@ defmodule RockeliveryWeb.ItemsJSONTest do
                updated_at: nil
              },
              message: "Item created!"
-           } =
-             response
+           } = response
   end
 end

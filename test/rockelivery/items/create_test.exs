@@ -12,8 +12,7 @@ defmodule Rockelivery.Items.CreateTest do
 
       response = Create.call(params)
 
-      assert {:ok, %Item{id: _id, description: "Suco de uva", price: _price}} =
-               response
+      assert {:ok, %Item{id: _id, description: "Suco de uva", price: _price}} = response
     end
 
     test "where there are invalid params, returns an error" do
