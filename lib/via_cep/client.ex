@@ -1,4 +1,3 @@
-
 defmodule Rockelivery.ViaCep.Client do
   use Tesla
   alias Rockelivery.Error
