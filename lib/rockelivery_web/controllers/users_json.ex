@@ -9,5 +9,7 @@ defmodule RockeliveryWeb.UsersJSON do
     }
   end
 
+  def sign_in(%{token: token}), do: %{token: token}
+
   def show(%{user: %User{} = user}), do: %{user: user}
 end
